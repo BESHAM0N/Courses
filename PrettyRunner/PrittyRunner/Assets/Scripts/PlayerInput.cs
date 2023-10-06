@@ -13,6 +13,7 @@ public class PlayerInput : MonoBehaviour
         Jump();
         Left();
         Right();
+        Back();
     }
 
     private void Jump()
@@ -32,6 +33,11 @@ public class PlayerInput : MonoBehaviour
         if(Input.GetKey(KeyCode.D))
             _playerMovement.MoveRight();
     }
-    
+
+    private void Back()
+    {
+        if(Input.GetKey(KeyCode.S))
+            _playerMovement.MoveBack();
+    }
     
 }

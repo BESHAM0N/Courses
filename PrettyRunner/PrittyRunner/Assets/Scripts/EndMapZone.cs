@@ -2,15 +2,15 @@ using UnityEngine;
 
 public class EndMapZone : MonoBehaviour
 {
-    // Start is called before the first frame update
-    void Start()
+    private static MapChanger _mapChanger;
+    private void OnTriggerEnter(Collider other)
     {
-        
+        _mapChanger.ChangeMap();
     }
 
-    // Update is called once per frame
-    void Update()
+    private void Awake()
     {
-        
+        if (_mapChanger == null)
+            _mapChanger = FindObjectOfType<MapChanger>();
     }
 }

@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 4871209353576878631}
   - component: {fileID: 7241493878523717357}
   - component: {fileID: 2667856892140843374}
+  - component: {fileID: -4419606724947911782}
   m_Layer: 0
   m_Name: Mushroom
   m_TagString: Untagged
@@ -92,9 +93,21 @@ MeshCollider:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 9186789227545610040}
   m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_Enabled: 1
+  m_IsTrigger: 1
+  m_Enabled: 0
   serializedVersion: 4
-  m_Convex: 0
+  m_Convex: 1
   m_CookingOptions: 30
   m_Mesh: {fileID: 7682724294687611154, guid: 10906e56672f9f047ab8ef4c57c0489f, type: 3}
+--- !u!114 &-4419606724947911782
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9186789227545610040}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 538748308f99e1c439cab16d5a3b680c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 

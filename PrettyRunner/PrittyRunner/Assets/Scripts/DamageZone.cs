@@ -1,18 +1,17 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class DamageZone : MonoBehaviour
 {
-    // Start is called before the first frame update
-    void Start()
+    private static PlayerHealth _playerHealth;
+    
+    private void OnTriggerEnter(Collider collider)
     {
-        
+        _playerHealth.DecreaseHealth();
     }
 
-    // Update is called once per frame
-    void Update()
+    private void Awake()
     {
-        
+        if (_playerHealth == null)
+            _playerHealth = FindObjectOfType<PlayerHealth>();
     }
 }
