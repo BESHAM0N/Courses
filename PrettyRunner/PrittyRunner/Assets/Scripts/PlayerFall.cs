@@ -5,7 +5,7 @@ public class PlayerFall
     {
         if (transform.position.y < 0)
         {
-            Debug.Log("Вы упали, нажмите на кнопку restart, чтобы начать игру заново");
+            Debug.Log("Вы упали");
             UnityEditor.EditorApplication.isPaused = true;
         }
     }

@@ -15,7 +15,7 @@ public class PlayerHealth : MonoBehaviour
         
         if (_health == 0)
         {
-            Debug.Log("Вы погибли, нажмите на кнопку restart, чтобы начать игру заново");
+            Debug.Log("Вы погибли"); 
             UnityEditor.EditorApplication.isPaused = true;
         }
     }

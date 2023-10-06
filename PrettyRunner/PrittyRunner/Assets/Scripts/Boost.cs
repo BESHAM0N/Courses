@@ -1,5 +1,4 @@
 using UnityEngine;
-
 public class Boost : MonoBehaviour
 {
     private static PlayerHealth _playerHealth;
