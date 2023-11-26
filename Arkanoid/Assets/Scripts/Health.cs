@@ -1,4 +1,7 @@
 using UnityEngine;
+using UnityEngine.Serialization;
+using UnityEngine.UI;
+
 public class Health : MonoBehaviour, IHealth
 {
     public int HealthAmount { get; }
@@ -8,10 +11,15 @@ public class Health : MonoBehaviour, IHealth
     
     [SerializeField, Tooltip("Количество очков, отнимаемое после пропуска шара"), Range(1, 5)] 
     private int _damage = 1;
+    [SerializeField] private Text _currentCounterOne;
+    [SerializeField] private Text _currentCounterTwo;
+
 
     private void Awake()
     {
         EventManager.ShortenLife.AddListener(SkipBall);
+        _currentCounterOne.text = _health.ToString();
+        _currentCounterTwo.text = _health.ToString();
     }
 
     public Health()
@@ -23,6 +31,9 @@ public class Health : MonoBehaviour, IHealth
     {
         _health -= _damage;
         Debug.Log($"У тебя осталось: {_health} жизней");
+        _currentCounterOne.text = _health.ToString(); 
+        _currentCounterTwo.text = _health.ToString();
+
 
         if (_health <= 0)
         {
@@ -30,6 +41,7 @@ public class Health : MonoBehaviour, IHealth
             Time.timeScale = 0;
         }
     }
+    
 
     private void OnDisable()
     {
