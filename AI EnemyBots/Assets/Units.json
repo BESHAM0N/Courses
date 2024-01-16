@@ -1,0 +1,42 @@
+[
+  {
+    "Id": 100,
+    "Name": "Slime",
+    "Health": 100,
+    "MoveSpeed": 2,
+    "WeakAttack": 10,
+    "StrongAttack": 25,
+    "ProbabilityOfMiss": 0.5,
+    "ProbabilityOfDoubleDamage": 0.2,
+    "ProbabilityOfWeakAttack": 0.7,
+    "ProbabilityOfStrongAttack": 0.3,
+    "EnemyType": 0
+  },
+  {
+    "Id": 200,
+    "Name": "Mushroom",
+    "Health": 110,
+    "MoveSpeed": 3,
+    "WeakAttack": 8,
+    "StrongAttack": 20,
+    "ProbabilityOfMiss": 0.3,
+    "ProbabilityOfDoubleDamage": 0.4,
+    "ProbabilityOfWeakAttack": 0.5,
+    "ProbabilityOfStrongAttack": 0.5,
+    "EnemyType": 1
+  },
+  {
+    "Id": 300,
+    "Name": "Cactus",
+    "Health": 90,
+    "MoveSpeed": 4,
+    "WeakAttack": 14,
+    "StrongAttack": 27,
+    "ProbabilityOfMiss": 0.4,
+    "ProbabilityOfDoubleDamage": 0.5,
+    "ProbabilityOfWeakAttack": 0.8,
+    "ProbabilityOfStrongAttack": 0.2,
+    "EnemyType": 2
+  }
+]
+

@@ -20,7 +20,6 @@ public class PlayerMoveMode : MonoBehaviour, IMoveable
     private void Awake()
     {
         SelectMoveMode();
-        Debug.Log("move init");
     }
 
     private void Start()
