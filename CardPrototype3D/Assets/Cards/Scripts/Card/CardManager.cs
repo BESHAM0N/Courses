@@ -101,10 +101,10 @@ namespace Cards
                 offset.y += _offset;
 
                 //TODO Заменить на список из 30 карт (список айдишников)
-                var random = _allCards[Random.Range(0, _allCards.Length)];
+                var card = _allCards[Random.Range(0, _allCards.Length)];
                 var picture = new Material(_baseMat);
-                picture.mainTexture = random.Texture;
-                deck[i].Configuration(picture, random, CardUtility.GetDescriptionById(random.Id));
+                picture.mainTexture = card.Texture;
+                deck[i].Configuration(picture, card, CardUtility.GetDescriptionById(card.Id));
             }
 
             return deck;

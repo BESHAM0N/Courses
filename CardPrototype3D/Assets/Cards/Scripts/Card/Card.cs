@@ -1,7 +1,9 @@
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine.EventSystems;
 using TMPro;
 using Unity.VisualScripting;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.Events;
 
@@ -14,6 +16,7 @@ namespace Cards
 
         public CardStateType State { get; set; }
         public int CurrentHealth { get; set; }
+        public CardPaymentType Payment { get; set; }
         public int CurrentDamage { get; set; }
         public PlayerTypeCard PlayerTypeCard { get; set; }
 
@@ -31,6 +34,9 @@ namespace Cards
         [SerializeField] private Vector3 _animationPositionCard = new Vector3(0f, 3f, 0f);
         [SerializeField] private Player _onePlayer;
         [SerializeField] private Player _twoPlayer;
+        private Card[] _cards = new Card[2];
+
+        private TableManager _tableManager;
 
         private Camera _camera;
         private int _costCard;
@@ -63,6 +69,10 @@ namespace Cards
 
         public void Configuration(Material picture, CardPropertiesData data, string description)
         {
+            CurrentHealth = data.Health;
+            CurrentDamage = data.Attack;
+            _defaultHealth = data.Health;
+            _defaultDamage = data.Attack;
             _picture.sharedMaterial = picture;
             _cost.text = data.Cost.ToString();
             _costCard = data.Cost;
@@ -139,16 +149,22 @@ namespace Cards
                 switch (State)
                 {
                     case CardStateType.InHand:
-                        //var playerMana = transform.parent.GetComponent<PlayerHand>().player.currentManaCount;
-
                         //ивент передающий стойомсть карты в метод DecreaseMana
                         EventManager.CallInitMaxCountObstacle(PlayerTypeCard == PlayerTypeCard.OnePlayerCard,
-                            _costCard);
+                            _costCard, gameObject.GetComponent<Card>());
+                        var parent = gameObject.transform.parent.GetComponent<ParentController>();
+                        parent.SetNewParent(gameObject.GetComponent<Card>());
 
                         // есть ли мана на карту, мой ли ход, есть ли место на столе
                         break;
                     case CardStateType.OnTable:
-                        // может ли атаковать.
+
+                        if (gameObject.transform.parent.gameObject.layer == 6 ||
+                            gameObject.transform.parent.gameObject.layer == 7)
+                        {
+                            _cards[0] = gameObject.GetComponent<Card>();
+                            Debug.Log($"Я ЗАПИСАЛ КАРТУ: {gameObject.name} В СПИСОК ПОД ИНДЕКСОМ: {_cards[0]}");
+                        }
 
                         break;
                 }
@@ -170,10 +186,6 @@ namespace Cards
                 }
                 else
                 {
-                    Vector3 newPosition = _camera.ScreenToWorldPoint(eventData.position);
-                    newPosition.z = 0;
-                    transform.position = newPosition + _offset;
-                    Debug.Log("ПЕРЕДВИНУЛИСЬ");
                 }
             }
             else
@@ -184,23 +196,66 @@ namespace Cards
 
         public void OnEndDrag(PointerEventData eventData)
         {
-            State = CardStateType.OnTable;
-
+            //State = Payment == CardPaymentType.Cheaply ? CardStateType.OnTable : CardStateType.InHand;
 
             switch (State)
             {
                 case CardStateType.InHand:
+
+                    if (Payment == CardPaymentType.Cheaply)
+                    {
+                        _tableManager = gameObject.transform.parent.GetComponent<TableManager>();
+                        _tableManager.SetCardOnTable(gameObject.GetComponent<Card>());
+
+                        Debug.Log("ПЕРЕДВИНУЛИСЬ");
+                    }
+                    else
+                    {
+                        Debug.Log("Не хватает маны");
+                    }
+
                     // если есть клич (класс с логикой клича, то используем его)
                     break;
                 case CardStateType.OnTable:
-                    if (_isDraggable)
+                    // if (_isDraggable)
+                    // {
+                    //     transform.position -= _animationPositionCard;
+                    //     _isDraggable = false;
+                    // }
+                    var test = eventData.selectedObject;
+                    var targetCard = eventData.hovered;
+                    var card = targetCard.FirstOrDefault(x => x.GetComponent<Card>() != null).GetComponent<Card>();
+
+
+                    // if (gameObject.transform.parent.gameObject.layer != targetCard.gameObject.transform.parent.gameObject.layer)
+                    // {
+                    if (card != null)
                     {
-                        transform.position -= _animationPositionCard;
-                        _isDraggable = false;
+                        TakeDamage(card);
                     }
+                    //}
 
                     // нужно ли атаковать, 
                     break;
+            }
+        }
+
+        private void TakeDamage(Card target)
+        {
+            Debug.Log($"HP ПЕРВОГО: {CurrentHealth}, HP ВТОРОГО : {target.CurrentHealth} ");
+            Debug.Log($"ДАмаг ПЕРВОГО: {CurrentDamage}, ДАмаг ВТОРОГО : {target.CurrentDamage} ");
+            CurrentHealth -= target.CurrentDamage;
+            target.CurrentHealth -= CurrentDamage;
+            Debug.Log($"HP ПЕРВОГО: {CurrentHealth}, HP ВТОРОГО : {target.CurrentHealth} ");
+
+            if (CurrentHealth <= 0)
+            {
+                gameObject.SetActive(false);
+            }
+
+            if (target.CurrentHealth <= 0)
+            {
+                target.gameObject.SetActive(false);
             }
         }
     }

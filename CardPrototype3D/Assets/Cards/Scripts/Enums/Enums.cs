@@ -26,6 +26,14 @@ namespace Cards
 		InHand,
 		OnTable
 	}
+	
+	public enum CardPaymentType : byte
+	{
+		Cheaply,
+		Expensive
+	}
+	
+	
 
 	public enum FieldType : byte
 	{

@@ -1303,6 +1303,7 @@ GameObject:
   - component: {fileID: 1307249474124220041}
   - component: {fileID: 1307249474124220040}
   - component: {fileID: 3258243326341675991}
+  - component: {fileID: 5062928751398036213}
   m_Layer: 0
   m_Name: CardPrefab
   m_TagString: Untagged
@@ -1410,4 +1411,20 @@ MonoBehaviour:
   _type: {fileID: 1307249472091281202}
   _health: {fileID: 1307249473871312366}
   _localScaleCard: 3
+  _defaultHealth: 1
+  _defaultDamage: 0
   _animationPositionCard: {x: 0, y: 3, z: 0}
+  _onePlayer: {fileID: 0}
+  _twoPlayer: {fileID: 0}
+--- !u!114 &5062928751398036213
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1307249474124220039}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cfffc535ebbb05849a15a75e377e41a8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
