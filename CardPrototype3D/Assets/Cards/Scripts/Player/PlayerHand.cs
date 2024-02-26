@@ -1,57 +1,79 @@
+using System;
 using System.Collections;
+using System.Collections.Generic;
+using System.IO;
 using UnityEngine;
 
 namespace Cards
 {
     public class PlayerHand : MonoBehaviour
     {
-        public FieldType type;
+        [SerializeField] private Transform[] _cardsInHandPositions;
+        [SerializeField] private Transform[] _cardSelectorPositions;
+
+        private List<Card> _cardsInHand;
+        private Card[] _selectorContainer;
+
+        private void Awake()
+        {
+            _cardsInHand = new();            
+            _selectorContainer = new Card[CardManager.INIT_CARDS_COUNT];
+            Debug.Log($"{_selectorContainer.Length}");
+        }
         
-        [SerializeField] private Transform[] _positions;
-        public Player player;
-        private Card[] _cardsInHand;
-
-        private void Start()
+        public List<int> GetSelectorIndexToChange()
         {
-            _cardsInHand = new Card[_positions.Length];
-        }
-
-
-        public bool SetNewCard(Card card)
-        {
-            //TODO получение урона как в игре 
-            if (card == null) return true;
-
-            //Находим пустое место в руке
-            var index = GetLastPositiom();
-
-            if (index == -1)
+            var output = new List<int>();
+            for (int i = 0; i < CardManager.INIT_CARDS_COUNT; i++)
             {
-                Destroy(card.gameObject);
-                return false;
-            }
-            
-            _cardsInHand[index] = card;
-            StartCoroutine(MoveInHand(card, _positions[index]));
-            
-            return true;
-        }
-
-
-        private int GetLastPositiom()
-        {
-            for (int i = 0; i < _cardsInHand.Length; i++)
-            {
-                if (_cardsInHand[i] == null) return i;
+                var item = _selectorContainer[i];
+                if (item.State == CardStateType.ToChange)
+                    output.Add(i);
             }
 
-            return -1;
+            return output;
+        }
+
+        public Card GetCardFromSelectorByIndex(int index) => _selectorContainer[index];
+
+        public void TakeCardForSelect(Card card, int index)
+        {
+            Debug.Log("Take card for select start");
+            if (card == null)
+            {
+                Debug.LogWarning("null card!");
+                return;
+            }
+
+            var go = gameObject;
+
+            if (_selectorContainer == null)
+            {
+                Debug.Log("_selectorContainer is null");
+            }
+
+            // if (_cardSelectorPositions[index] == null)
+            // {
+            //     // TODO: destroy?
+            //     Destroy(card.gameObject);
+            //     return;
+            // }
+            
+            Debug.Log($"Using selector container is null:{_selectorContainer == null}");
+            _selectorContainer[index] = card;
+            StartCoroutine(MoveToSelector(card, _cardSelectorPositions[index], CardStateType.InSelector));
         }
 
         //Перемещение карты
-        private IEnumerator MoveInHand(Card card, Transform target)
+        private IEnumerator MoveToSelector(Card card, Transform target, CardStateType cardState,
+            bool switchVisual = true, bool wait = false)
         {
-            card.SwitchVisual();
+            if (switchVisual)
+                card.SwitchVisual();
+
+            if (wait)
+                yield return new WaitForSeconds(1);
+
             var time = 0f;
             var startPos = card.transform.position;
             var endPos = target.position;
@@ -63,7 +85,37 @@ namespace Cards
                 yield return null;
             }
 
-            card.State = CardStateType.InHand;
+            card.State = cardState;
         }
+
+        public IEnumerator MoveCardsToHand()
+        {
+            for (var i = 0; i < _selectorContainer.Length; i++)
+            {
+                var card = _selectorContainer[i];
+                _cardsInHand.Insert(i, card);
+                StartCoroutine(MoveToSelector(card,
+                    _cardsInHandPositions[i],
+                    CardStateType.InHand,
+                    false,
+                    true));
+            }
+
+            yield return new WaitForSeconds(2);
+            
+            yield return null;
+        }
+
+        public void FlipCards(bool myTurn)
+        {
+            foreach (var card in _cardsInHand)
+            {
+                card.MyTurn(myTurn);
+            }
+        }
+        
+        
+        
+        
     }
 }

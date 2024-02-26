@@ -22,16 +22,8 @@ namespace Cards
             _camera = Camera.main;
             CameraTransform.position = _playerOne.position;
             CameraTransform.rotation = _playerOne.rotation;
-            _nextPlayer = _playerTwo;
-            _endTurn.onClick.AddListener(SwitchPlayer);
-        }
-
-        private void Update()
-        {
-            if (Input.GetKeyDown(KeyCode.Tab))
-            {
-                SwitchPlayer();
-            }
+            _nextPlayer = _playerTwo; 
+            //_endTurn.onClick.AddListener(SwitchPlayer);
         }
 
         private void SwitchPlayer()
@@ -47,13 +39,12 @@ namespace Cards
                     _timeSpeedSwitch * Time.deltaTime);
             }
             
-            _nextPlayer = _nextPlayer == _playerOne ? _playerTwo : _playerOne;
+            _nextPlayer = _nextPlayer == _playerOne 
+                ? _playerTwo 
+                : _playerOne;
 
             firstPlayerMove = _nextPlayer == _playerTwo;
-            
-            _manaController.IncreaseMana(firstPlayerMove);
-            
-        }
-        
+            //_manaController.IncreaseMana(firstPlayerMove);
+        }        
     }
 }

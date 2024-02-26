@@ -1320,7 +1320,7 @@ Transform:
   m_GameObject: {fileID: 1307249474124220039}
   m_LocalRotation: {x: 1, y: 0, z: 0, w: 0}
   m_LocalPosition: {x: -281.3893, y: 18.805, z: 5.4348}
-  m_LocalScale: {x: 1.4546546, y: 0.02, z: 1.5696434}
+  m_LocalScale: {x: 1, y: 0.02, z: 1.2}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1307249474052391472}
@@ -1410,12 +1410,11 @@ MonoBehaviour:
   _damage: {fileID: 1307249473160749871}
   _type: {fileID: 1307249472091281202}
   _health: {fileID: 1307249473871312366}
-  _localScaleCard: 3
+  _localScaleCard: 1
   _defaultHealth: 1
   _defaultDamage: 0
-  _animationPositionCard: {x: 0, y: 3, z: 0}
-  _onePlayer: {fileID: 0}
-  _twoPlayer: {fileID: 0}
+  _animationPositionCard: {x: 0, y: 2, z: 0}
+  _cursor: {fileID: 2800000, guid: 183f7b7549219ab47becb461a16df882, type: 3}
 --- !u!114 &5062928751398036213
 MonoBehaviour:
   m_ObjectHideFlags: 0

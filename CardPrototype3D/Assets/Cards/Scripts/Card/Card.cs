@@ -1,3 +1,5 @@
+using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine.EventSystems;
@@ -10,7 +12,7 @@ using UnityEngine.Events;
 namespace Cards
 {
     public class Card : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IBeginDragHandler, IDragHandler,
-        IEndDragHandler
+        IEndDragHandler, IPointerDownHandler
     {
         public bool isFromSide => _frontCard.activeSelf;
 
@@ -28,29 +30,29 @@ namespace Cards
         [SerializeField] private TextMeshPro _damage;
         [SerializeField] private TextMeshPro _type;
         [SerializeField] private TextMeshPro _health;
-        [SerializeField] private float _localScaleCard = 3f;
+        [SerializeField] private float _localScaleCard = 1f;
         [SerializeField] private int _defaultHealth = 1;
         [SerializeField] private int _defaultDamage = 0;
-        [SerializeField] private Vector3 _animationPositionCard = new Vector3(0f, 3f, 0f);
-        [SerializeField] private Player _onePlayer;
-        [SerializeField] private Player _twoPlayer;
-        private Card[] _cards = new Card[2];
+        [SerializeField] private Vector3 _animationPositionCard = new Vector3(0f, 2f, 0f);
 
+        [SerializeField] private Texture2D _cursor;
+
+        private bool _myTurn;
+        private Color _initialMatColor;
+        
         private TableManager _tableManager;
+        private Player _player;
 
-        private Camera _camera;
         private int _costCard;
         private LinkedList<BaseEffect> _effects = new LinkedList<BaseEffect>();
-        private Vector3 _offset;
         private bool _isDraggable = true;
-        private PlayerSwitcher _playerSwitcher;
 
         private void Awake()
         {
-            _camera = Camera.allCameras[0];
             CurrentHealth = _defaultHealth;
             CurrentDamage = _defaultDamage;
-            _playerSwitcher = _camera.GetComponent<PlayerSwitcher>();
+
+            _initialMatColor = _frontCard.GetComponent<MeshRenderer>().material.color;
         }
 
         public void AddEffect(BaseEffect effect)
@@ -67,10 +69,25 @@ namespace Cards
             return effect.TryToRemoveEffect(this);
         }
 
+        public void MyTurn(bool myTurn)
+        {
+            _myTurn = myTurn;
+
+            if (State != CardStateType.OnTable)
+                _frontCard.SetActive(myTurn);
+        }
+
+        [ContextMenu("Switch Visual")]
+        public void SwitchVisual()
+        {
+            _frontCard.SetActive(!isFromSide);
+        }
+
         public void Configuration(Material picture, CardPropertiesData data, string description)
         {
             CurrentHealth = data.Health;
             CurrentDamage = data.Attack;
+            
             _defaultHealth = data.Health;
             _defaultDamage = data.Attack;
             _picture.sharedMaterial = picture;
@@ -92,8 +109,8 @@ namespace Cards
 
         public void OnPointerEnter(PointerEventData eventData)
         {
-            if ((_playerSwitcher.firstPlayerMove && PlayerTypeCard == PlayerTypeCard.OnePlayerCard) ||
-                (!_playerSwitcher.firstPlayerMove && PlayerTypeCard == PlayerTypeCard.TwoPlayerCard))
+            Debug.Log(_myTurn);
+            if (_myTurn)
             {
                 switch (State)
                 {
@@ -105,53 +122,37 @@ namespace Cards
                         break;
                 }
             }
-            else
-            {
-                Debug.Log("ЭТО НЕ ВАШИ КАРТЫ");
-            }
         }
 
         public void OnPointerExit(PointerEventData eventData)
         {
-            if ((_playerSwitcher.firstPlayerMove && PlayerTypeCard == PlayerTypeCard.OnePlayerCard) ||
-                (!_playerSwitcher.firstPlayerMove && PlayerTypeCard == PlayerTypeCard.TwoPlayerCard))
+            if (_myTurn)
             {
                 switch (State)
                 {
                     case CardStateType.InHand:
                         transform.localScale /= _localScaleCard;
                         transform.position -= _animationPositionCard;
-                        Debug.Log("МЕНЯ ПОДНЯЛИ");
+
                         break;
                     case CardStateType.OnTable:
                         break;
                 }
             }
-            else
-            {
-                Debug.Log("ЭТО НЕ ВАШИ КАРТЫ");
-            }
-        }
-
-        [ContextMenu("Switch Visual")]
-        public void SwitchVisual()
-        {
-            _frontCard.SetActive(!isFromSide);
         }
 
         public void OnBeginDrag(PointerEventData eventData)
         {
-            _offset = transform.position - _camera.ScreenToWorldPoint(eventData.position);
+            //_offset = transform.position - _camera.ScreenToWorldPoint(eventData.position);
 
-            if ((_playerSwitcher.firstPlayerMove && PlayerTypeCard == PlayerTypeCard.OnePlayerCard) ||
-                (!_playerSwitcher.firstPlayerMove && PlayerTypeCard == PlayerTypeCard.TwoPlayerCard))
+            if (_myTurn)
             {
                 switch (State)
                 {
                     case CardStateType.InHand:
                         //ивент передающий стойомсть карты в метод DecreaseMana
-                        EventManager.CallInitMaxCountObstacle(PlayerTypeCard == PlayerTypeCard.OnePlayerCard,
-                            _costCard, gameObject.GetComponent<Card>());
+                        
+                        
                         var parent = gameObject.transform.parent.GetComponent<ParentController>();
                         parent.SetNewParent(gameObject.GetComponent<Card>());
 
@@ -162,8 +163,7 @@ namespace Cards
                         if (gameObject.transform.parent.gameObject.layer == 6 ||
                             gameObject.transform.parent.gameObject.layer == 7)
                         {
-                            _cards[0] = gameObject.GetComponent<Card>();
-                            Debug.Log($"Я ЗАПИСАЛ КАРТУ: {gameObject.name} В СПИСОК ПОД ИНДЕКСОМ: {_cards[0]}");
+                            //_cards[0] = gameObject.GetComponent<Card>();
                         }
 
                         break;
@@ -177,15 +177,11 @@ namespace Cards
 
         public void OnDrag(PointerEventData eventData)
         {
-            if ((_playerSwitcher.firstPlayerMove && PlayerTypeCard == PlayerTypeCard.OnePlayerCard) ||
-                (!_playerSwitcher.firstPlayerMove && PlayerTypeCard == PlayerTypeCard.TwoPlayerCard))
+            if (_myTurn)
             {
                 if (State == CardStateType.OnTable)
                 {
                     Debug.Log("ЛОГИКА НАНЕСЕНИЯ УРОНА");
-                }
-                else
-                {
                 }
             }
             else
@@ -217,46 +213,95 @@ namespace Cards
                     // если есть клич (класс с логикой клича, то используем его)
                     break;
                 case CardStateType.OnTable:
-                    // if (_isDraggable)
-                    // {
-                    //     transform.position -= _animationPositionCard;
-                    //     _isDraggable = false;
-                    // }
-                    var test = eventData.selectedObject;
-                    var targetCard = eventData.hovered;
-                    var card = targetCard.FirstOrDefault(x => x.GetComponent<Card>() != null).GetComponent<Card>();
+                    var targetCard = eventData.hovered.FirstOrDefault(x => x.GetComponent<Card>() != null)
+                        ?.GetComponent<Card>();
 
-
-                    // if (gameObject.transform.parent.gameObject.layer != targetCard.gameObject.transform.parent.gameObject.layer)
-                    // {
-                    if (card != null)
+                    if (targetCard != null)
                     {
-                        TakeDamage(card);
+                        StartCoroutine(Attack(targetCard));
                     }
-                    //}
 
-                    // нужно ли атаковать, 
                     break;
             }
         }
 
-        private void TakeDamage(Card target)
+        /// <summary>
+        /// Take damage logic.
+        /// </summary>
+        /// <param name="damage"></param>
+        /// <returns>True if died. False if survived</returns>
+        private bool TakeDamage(int damage)
         {
-            Debug.Log($"HP ПЕРВОГО: {CurrentHealth}, HP ВТОРОГО : {target.CurrentHealth} ");
-            Debug.Log($"ДАмаг ПЕРВОГО: {CurrentDamage}, ДАмаг ВТОРОГО : {target.CurrentDamage} ");
-            CurrentHealth -= target.CurrentDamage;
-            target.CurrentHealth -= CurrentDamage;
-            Debug.Log($"HP ПЕРВОГО: {CurrentHealth}, HP ВТОРОГО : {target.CurrentHealth} ");
-
+            CurrentHealth -= damage;
             if (CurrentHealth <= 0)
             {
-                gameObject.SetActive(false);
+                Death();
+                return true;
             }
 
-            if (target.CurrentHealth <= 0)
+            _health.text = CurrentHealth.ToString();
+            return false;
+        }
+
+        private void Death()
+        {
+            // More logic...
+            gameObject.SetActive(false);
+        }
+
+        private IEnumerator Attack(Card target)
+        {
+            var initPosition = transform.position;
+            var targetPosition = target.transform.position;
+            
+            // Move to the enemy
+            yield return _tableManager.MoveCard(this, targetPosition);
+
+            // Target takes damage
+            target.TakeDamage(CurrentDamage);
+
+            // Take damage from target
+            if (!TakeDamage(target.CurrentDamage))
             {
-                target.gameObject.SetActive(false);
+                // if survived, go back
+                yield return _tableManager.MoveCard(this, initPosition);
             }
+        }
+
+        private bool CanPlayCard(int currentPlayerMana)
+        {
+            return currentPlayerMana - _costCard >= 0;
+        }
+
+        public void ResetColor(Color? color = null)
+        {
+            color ??= _initialMatColor;
+            _frontCard.GetComponent<MeshRenderer>().material.color = color.Value;
+        }
+
+        public void OnPointerDown(PointerEventData eventData)
+        {
+            switch (State)
+            {
+                case CardStateType.InDeck:
+                    break;
+                case CardStateType.InSelector:
+                    State = CardStateType.ToChange;
+                    ResetColor(Color.red);
+                    break;
+                case CardStateType.ToChange:
+                    State = CardStateType.InSelector;
+                    ResetColor();
+                    break;
+                case CardStateType.InHand:
+                    break;
+                case CardStateType.OnTable:
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
+
+            Debug.Log($"Card state after click: {State}");
         }
     }
 }

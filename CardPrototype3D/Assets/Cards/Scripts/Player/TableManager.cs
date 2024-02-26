@@ -13,8 +13,7 @@ public class TableManager : MonoBehaviour
     {
         _cardsOnTable = new Card[_cardSlots.Length];
     }
-
-
+    
     public bool SetCardOnTable(Card card)
     {
         //TODO получение урона как в игре 
@@ -47,13 +46,13 @@ public class TableManager : MonoBehaviour
         return -1;
     }
 
-    private IEnumerator MoveOnTable(Card card, Transform target)
+    private IEnumerator MoveOnTable(Card card, Transform target, float timing = 1f)
     {
         var time = 0f;
         var startPos = card.transform.position;
         var endPos = target.position;
 
-        while (time < 1f)
+        while (time < timing)
         {
             card.transform.position = Vector3.Lerp(startPos, endPos, time);
             time += Time.deltaTime;
@@ -61,5 +60,21 @@ public class TableManager : MonoBehaviour
         }
 
         card.State = CardStateType.OnTable;
+    }
+
+    public IEnumerator MoveCard(Card from, Vector3 to)
+    {
+        var initialPos = from.transform.position;
+        
+
+        var time = 0f;
+
+        Debug.Log("Go attack");
+        while (time <= 1f)
+        {
+            from.transform.position = Vector3.Lerp(initialPos, to, time);
+            time += Time.deltaTime;
+            yield return null;
+        }            
     }
 }

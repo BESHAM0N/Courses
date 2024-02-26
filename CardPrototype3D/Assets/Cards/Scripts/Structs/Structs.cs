@@ -7,6 +7,13 @@ using OneLine;
 namespace Cards
 {
 	[Serializable]
+	public struct DeckItem
+	{
+		public int CardId;
+		public bool IsUsed;
+	}
+	
+	[Serializable]
 	public struct CardPropertiesData
 	{
 		[Width(30)]
