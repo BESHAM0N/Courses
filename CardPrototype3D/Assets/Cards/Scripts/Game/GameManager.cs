@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections;
+using Assets.Cards.Scripts.Mechanics;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -7,35 +9,63 @@ namespace Cards.Game
 {
     public class GameManager : MonoBehaviour
     {
-        private GameState _gameState;
+        public static GameState GameState { get; private set; }
+        public static Player ActivePlayer { get; private set; }
+        public static TableManager TableManager { get; private set; }
+        public static bool IsFirstPlayerTurn => GameState == GameState.FirstPlayerTurn;
 
         [SerializeField] private Player _firstPlayer;
         [SerializeField] private Player _secondPlayer;
+
+        [SerializeField] private TableManager _firstTable;
+        [SerializeField] private TableManager _secondTable;
         [SerializeField] private CardManager _cardManager;
-        [SerializeField] private Button _endTurnButton; 
-        
+        [SerializeField] private Button _endTurnButton;
+
         private void Awake()
         {
-            _cardManager.InitDeck(_firstPlayer);
-            _cardManager.InitDeck(_secondPlayer);
-            
-            _gameState = GameState.FirstPlayerPreparation;
-            _endTurnButton.onClick.AddListener(EndTurn);            
+            GameState = GameState.FirstPlayerPreparation;
+            _endTurnButton.onClick.AddListener(EndTurn);
+            EventManager.OnCardPlayed.AddListener(OnCardPlayed);
+            EventManager.OnPlayerDied.AddListener(OnPlayerDied);
+        }
+
+        private void OnPlayerDied(Player deadPlayer)
+        {
+            var alivePlayer = deadPlayer == _firstPlayer 
+                ? _secondPlayer 
+                : _firstPlayer;
+            GameState = GameState.Ending;
+            Debug.Log($"Player {alivePlayer.name} has won. Ending game...");
         }
 
         private void Start()
         {
-            PrepareGame(_firstPlayer);            
+            PrepareGame();
+            ActivePlayer = _firstPlayer;
+            TableManager = _firstTable;
         }
 
-        private void PrepareGame(Player player)
+        private void OnCardPlayed(Card card)
         {
-            _cardManager.DealCardsForSelect(player);
+            ActivePlayer.DecreaseMana(card.ManaCost);
+            _cardManager.CalculateMana();
+            _cardManager.RemoveCardFromHand(card);
+            _cardManager.SetCanTakeDamage();
+            var canTakeDamage = _cardManager.HasTaunts(IsFirstPlayerTurn) == false;
+            ActivePlayer.SetCanTakeDamage(canTakeDamage);
+            TableManager.SetCardOnTable(card);
+            _cardManager.DoEffect(card);
+        }
+
+        private void PrepareGame()
+        {
+            _cardManager.DealCardsForSelect();
         }
 
         private void EndTurn()
         {
-            switch (_gameState)
+            switch (GameState)
             {
                 case GameState.FirstPlayerPreparation:
                     StartCoroutine(OnFirstPlayerPreparationFinish());
@@ -54,48 +84,62 @@ namespace Cards.Game
                 default:
                     throw new ArgumentOutOfRangeException();
             }
-            Debug.Log(_gameState.ToString());
+            Debug.Log(GameState.ToString());
         }
 
         private IEnumerator OnFirstPlayerPreparationFinish()
         {
-            yield return _cardManager.ChangeCards(_firstPlayer);
-            _cardManager.HideCards(_gameState, _firstPlayer);
+            yield return _cardManager.ChangeCards();
+            _cardManager.HideCards(GameState);
+
             Debug.Log("2nd player prep state");
-            _gameState = GameState.SecondPlayerPreparation;
+            GameState = GameState.SecondPlayerPreparation;
+            ActivePlayer = _secondPlayer;
+            _cardManager.DealCardsForSelect();
         }
 
         private IEnumerator OnSecondPlayerPreparationFinish()
         {
-            yield return _cardManager.ChangeCards(_secondPlayer);
-            
+            yield return _cardManager.ChangeCards();
+
             Debug.Log("Flip all cards, wait game start in 2 sec");
-            _cardManager.HideCards(_gameState, _secondPlayer);
+            _cardManager.HideCards(GameState);
             yield return new WaitForSeconds(2);
-            
-            Debug.Log("Starting game");
-            Debug.Log("Flip p1 cards");
-            
-            _gameState = GameState.FirstPlayerTurn;
-            _cardManager.StartGame(true);
-                        
+
+            GameState = GameState.FirstPlayerTurn;
+            Debug.Log("Starting game: GameState " + GameState);
+            ActivePlayer = _firstPlayer;
+            _cardManager.StartGame();
+
             yield return null;
         }
 
         private void ProcessPlayerTurn()
-        {            
-            var isFirstPlayerTurn = _gameState == GameState.FirstPlayerTurn;
-            // Current turn section
-            _cardManager.HideCards(_gameState, _firstPlayer);
-            
-            // Trigger that turn is switching
-            EventManager.CallSwitchTurn(isFirstPlayerTurn);
+        {
+            var isFirstPlayerTurn = GameState == GameState.FirstPlayerTurn;
+            // CURRENT player turn
+            _cardManager.HideCards(GameState);
 
-            // End of the turn
-            // Pass turn to another player
-            _gameState = _gameState == GameState.FirstPlayerTurn
+            // INIT next player turn
+            GameState = isFirstPlayerTurn
                 ? GameState.SecondPlayerTurn
                 : GameState.FirstPlayerTurn;
+
+            ActivePlayer = isFirstPlayerTurn
+                ? _secondPlayer
+                : _firstPlayer;
+
+            TableManager = isFirstPlayerTurn
+                ? _secondTable
+                : _firstTable;
+
+            ActivePlayer.IncreaseManaPool();
+            _cardManager.DealCard();
+            _cardManager.CalculateMana();
+
+            Debug.Log($"Active player:{ActivePlayer.name}. IsFirstPlayer: {IsFirstPlayerTurn}");
+
+            EventManager.CallSwitchTurn();
         }
     }
 }

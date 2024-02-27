@@ -21,15 +21,21 @@ MonoBehaviour:
     Attack: 9
     Health: 5
     Type: 2
+    Mechanics: 0
+    Instructions: 
   - Id: 702
     Name: Stormwind Champion
     Texture: {fileID: 2800000, guid: 69fe9d69d1e8d194bbea49330e90af90, type: 3}
     Attack: 6
     Health: 6
     Type: 0
+    Mechanics: 4
+    Instructions: 030000000000000003000000010000000300000001000000030000000100000001000000
   - Id: 703
     Name: War Golem
     Texture: {fileID: 2800000, guid: df4e97a7b1f292b40b18dad56f8d434b, type: 3}
     Attack: 7
     Health: 7
     Type: 0
+    Mechanics: 0
+    Instructions: 

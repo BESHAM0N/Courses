@@ -21,21 +21,33 @@ MonoBehaviour:
     Attack: 4
     Health: 7
     Type: 0
+    Mechanics: 0
+    Size: 0
+    Instructions: 
   - Id: 602
     Name: Boulderfist Ogre
     Texture: {fileID: 2800000, guid: 69bf3e3df1be3834f8196c02722d7e72, type: 3}
     Attack: 6
     Health: 7
     Type: 0
+    Mechanics: 0
+    Size: 0
+    Instructions: 
   - Id: 603
     Name: Lord of the Arena
     Texture: {fileID: 2800000, guid: 22d0b460a9e1a2b48a973c821e256d31, type: 3}
     Attack: 6
     Health: 5
     Type: 0
+    Mechanics: 3
+    Size: 0
+    Instructions: 
   - Id: 604
     Name: Reckless Rocketeer
     Texture: {fileID: 2800000, guid: 583235ce1b48b8c4ab0214f1689e6c2f, type: 3}
     Attack: 5
     Health: 2
     Type: 0
+    Mechanics: 1
+    Size: 0
+    Instructions: 

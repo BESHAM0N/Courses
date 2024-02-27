@@ -1,18 +1,21 @@
+using System;
 using Cards;
 using UnityEngine;
 using UnityEngine.Events;
 
 public class EventManager : MonoBehaviour
 {
-    public static readonly UnityEvent<bool, int, Card> DecreasePlayerMana = new();
-    public static readonly UnityEvent<bool> TurnSwitch = new();
-    public static readonly UnityEvent Test = new(); 
+    public static readonly UnityEvent<Card> OnCardPlayed = new();
+    public static readonly UnityEvent TurnSwitch = new();
+    public static readonly UnityEvent<Player> OnPlayerDied = new();
 
-    public static void CallInitMaxCountObstacle(bool playerOne, int manaCost, Card card) =>    
-        DecreasePlayerMana?.Invoke(playerOne, manaCost, card);
-    
-    
+    public static void CallCardPlayed(Card card) =>
+        OnCardPlayed?.Invoke(card);
 
-    public static void CallSwitchTurn(bool isFirstPlayerTurn) =>    
-        TurnSwitch?.Invoke(isFirstPlayerTurn);
+    public static void CallSwitchTurn() =>
+        TurnSwitch?.Invoke();
+
+    public static void CallPlayerDied(Player player) =>
+        OnPlayerDied?.Invoke(player);
+    
 }

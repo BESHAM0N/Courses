@@ -1,7 +1,8 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.IO;
+using System.Linq;
+using Cards.Game;
 using UnityEngine;
 
 namespace Cards
@@ -12,15 +13,19 @@ namespace Cards
         [SerializeField] private Transform[] _cardSelectorPositions;
 
         private List<Card> _cardsInHand;
+        private List<Card> _cardsOnTable;
         private Card[] _selectorContainer;
+
+        public List<Card> CardsOnTable => _cardsOnTable;
 
         private void Awake()
         {
-            _cardsInHand = new();            
+            _cardsInHand = new();
+            _cardsOnTable = new();
             _selectorContainer = new Card[CardManager.INIT_CARDS_COUNT];
             Debug.Log($"{_selectorContainer.Length}");
         }
-        
+
         public List<int> GetSelectorIndexToChange()
         {
             var output = new List<int>();
@@ -45,8 +50,6 @@ namespace Cards
                 return;
             }
 
-            var go = gameObject;
-
             if (_selectorContainer == null)
             {
                 Debug.Log("_selectorContainer is null");
@@ -58,14 +61,14 @@ namespace Cards
             //     Destroy(card.gameObject);
             //     return;
             // }
-            
+
             Debug.Log($"Using selector container is null:{_selectorContainer == null}");
             _selectorContainer[index] = card;
-            StartCoroutine(MoveToSelector(card, _cardSelectorPositions[index], CardStateType.InSelector));
+            StartCoroutine(MoveCard(card, _cardSelectorPositions[index], CardStateType.InSelector));
         }
 
         //Перемещение карты
-        private IEnumerator MoveToSelector(Card card, Transform target, CardStateType cardState,
+        private IEnumerator MoveCard(Card card, Transform target, CardStateType cardState,
             bool switchVisual = true, bool wait = false)
         {
             if (switchVisual)
@@ -94,7 +97,7 @@ namespace Cards
             {
                 var card = _selectorContainer[i];
                 _cardsInHand.Insert(i, card);
-                StartCoroutine(MoveToSelector(card,
+                StartCoroutine(MoveCard(card,
                     _cardsInHandPositions[i],
                     CardStateType.InHand,
                     false,
@@ -102,20 +105,98 @@ namespace Cards
             }
 
             yield return new WaitForSeconds(2);
-            
             yield return null;
         }
 
-        public void FlipCards(bool myTurn)
+        public IEnumerator TakeCard(Card card)
+        {
+            Debug.Log("Taking card for player: " + GameManager.ActivePlayer.name);
+
+            int index = _cardsInHand.Count;
+            _cardsInHand.Add(card);
+            Debug.Log("Index:" + index);
+            var target = _cardsInHandPositions[index];
+
+            yield return MoveCard(card,
+                    target,
+                    CardStateType.InHand,
+                    false,
+                    true);
+
+            card.SetMyTurn(true);
+        }
+
+        public void SetTurn(bool myTurn)
         {
             foreach (var card in _cardsInHand)
             {
-                card.MyTurn(myTurn);
+                card.SetMyTurn(myTurn);
+                card.SetCanAttack(false);
+            }
+
+            foreach (var card in _cardsOnTable)
+            {
+                card.SetMyTurn(myTurn);
+                card.SetCanAttack(myTurn);
             }
         }
-        
-        
-        
-        
+
+        public void CalculateMana(int currentMana)
+        {
+            foreach (var card in _cardsInHand)
+            {
+                card.SetEnoughMana(currentMana);
+            }
+        }
+
+        public void RemoveCardFromHand(Card card)
+        {
+            var index = _cardsInHand.IndexOf(card);
+            _cardsOnTable.Add(card);
+
+            for (int i = index; i < _cardsInHand.Count - 1; i++)
+            {
+                if (i == _cardsInHand.Count - 1)
+                {
+                    index = i;
+                    return;
+                }
+                var current = _cardsInHand[i];
+                var next = _cardsInHand[i + 1];
+
+              //  Debug.Log($"Moving card from {i + 1} to {i}");
+                StartCoroutine(MoveCard(next, _cardsInHandPositions[i], CardStateType.InHand, false));
+
+                current = next;
+            }
+            _cardsInHand.RemoveAt(index);
+            //Debug.Log($"Removed card from hand: {index}. {_cardsInHand.Count}");
+        }
+
+        public void SetCanTakeDamage()
+        {
+            var taunts = _cardsOnTable.Where(x => x.Mechanics == Mechanics.Taunt).ToList();
+            var other = _cardsOnTable.Except(taunts).ToList();
+
+            //TODO play with hasTaunts to check
+            bool hasTaunts = taunts.Any();
+            if (hasTaunts)
+            {
+                taunts.ForEach(x => x.SetCanTakeDamage(true));
+                other.ForEach(x => x.SetCanTakeDamage(false));
+                Debug.Log($"Has taunts: {taunts.Count}. Other: {other.Count}");
+            }
+            else
+            {
+                Debug.Log($"No taunts. All can be attacked: {other.Count}");
+                other.ForEach(x => x.SetCanTakeDamage(true));
+            }
+        }
+
+        public void Spawn(Card card)
+        {
+            _cardsOnTable.Add(card);
+            GameManager.TableManager.SetCardOnTable(card);
+        }
     }
 }

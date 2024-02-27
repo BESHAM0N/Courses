@@ -65,7 +65,6 @@ public class TableManager : MonoBehaviour
     public IEnumerator MoveCard(Card from, Vector3 to)
     {
         var initialPos = from.transform.position;
-        
 
         var time = 0f;
 

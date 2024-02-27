@@ -950,9 +950,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _deckParent: {fileID: 658640163}
-  _health: 30
+  _maxHealth: 30
   _maxManaPool: 10
+  _manaPool: 1
+  _currentDamage: 0
+  _defaultDamage: 0
   _currentManaText: {fileID: 2133345179}
+  _currentHealthText: {fileID: 468960655}
   _manaPoolText: {fileID: 64507877}
 --- !u!222 &169987491
 CanvasRenderer:
@@ -2049,6 +2053,7 @@ GameObject:
   - component: {fileID: 411693136}
   - component: {fileID: 411693137}
   - component: {fileID: 411693138}
+  - component: {fileID: 411693139}
   m_Layer: 0
   m_Name: Center
   m_TagString: Untagged
@@ -2096,13 +2101,14 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 3229ff84acff46246a9bd0591a1ab7f6, type: 2}
   - {fileID: 11400000, guid: cb7286cd1080bf04cbbf4a2265e52f38, type: 2}
   - {fileID: 11400000, guid: 93d377064370f4443970eeb9769fd723, type: 2}
-  _cardInDeck: 30
+  _deckSize: 30
   _cardPrefab: {fileID: 3258243326341675991, guid: 1efffdaff08b40c44aa84086651f4a25, type: 3}
   _deckOneParent: {fileID: 75552788}
   _deckTwoParent: {fileID: 658640163}
   _offset: 0.01
-  _playerOneDeck: []
-  _playerTwoDeck: []
+  _playerOneHand: {fileID: 1192809517}
+  _playerTwoHand: {fileID: 1772390514}
+  _vm: {fileID: 411693139}
 --- !u!114 &411693137
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2115,8 +2121,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f17089d1811cc7246a96a4c009e5d21f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _playerOne: {fileID: 853348458}
-  _playerTwo: {fileID: 169987490}
 --- !u!114 &411693138
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2131,8 +2135,23 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _firstPlayer: {fileID: 853348458}
   _secondPlayer: {fileID: 169987490}
+  _firstTable: {fileID: 1826924046}
+  _secondTable: {fileID: 1524433050}
   _cardManager: {fileID: 411693136}
   _endTurnButton: {fileID: 406651091}
+--- !u!114 &411693139
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 411693134}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bf914efd87c71814d80a692258b2aa09, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _cardManager: {fileID: 411693136}
 --- !u!1 &422692600
 GameObject:
   m_ObjectHideFlags: 0
@@ -4051,9 +4070,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _deckParent: {fileID: 75552788}
-  _health: 30
+  _maxHealth: 30
   _maxManaPool: 10
+  _manaPool: 1
+  _currentDamage: 0
+  _defaultDamage: 0
   _currentManaText: {fileID: 818995671}
+  _currentHealthText: {fileID: 2066968209}
   _manaPoolText: {fileID: 1699825406}
 --- !u!1 &890724814
 GameObject:
@@ -4271,7 +4294,6 @@ MonoBehaviour:
   _playerOne: {fileID: 727521269}
   _playerTwo: {fileID: 506457516}
   _endTurn: {fileID: 406651091}
-  _manaController: {fileID: 411693137}
   firstPlayerMove: 1
 --- !u!1 &979381068
 GameObject:

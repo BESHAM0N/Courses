@@ -1,7 +1,4 @@
-using System.Collections;
-using System.Collections.Generic;
 using Cards;
-using UnityEngine;
 
 public class StatsEffect : BaseEffect
 {
@@ -15,15 +12,16 @@ public class StatsEffect : BaseEffect
 
     public override void SetEffect(Card target)
     {
-        target.CurrentHealth += Health;
+        target.IncreaseHealth(Health);
         target.CurrentDamage += Damage;
+        target.UpdateText();
     }
 
     public override bool TryToRemoveEffect(Card target)
     {
         if (Permanent) return false;
 
-        target.CurrentHealth -= Health;
+        target.IncreaseHealth(-Health);
         target.CurrentDamage -= Damage;
 
         return true;

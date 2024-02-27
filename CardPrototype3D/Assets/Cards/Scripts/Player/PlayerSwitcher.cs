@@ -4,12 +4,11 @@ using UnityEngine.UI;
 namespace Cards
 {
     public class PlayerSwitcher : MonoBehaviour
-    {
+    { //TODO: remove/refactor
         [SerializeField] private float _timeSpeedSwitch;
         [SerializeField] private Transform _playerOne;
         [SerializeField] private Transform _playerTwo;
         [SerializeField] private Button _endTurn;
-        [SerializeField] private ManaController _manaController;
         
         private Camera _camera;
         private Transform _nextPlayer;

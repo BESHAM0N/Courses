@@ -6,7 +6,7 @@
         Murloc = 1,
         Beast = 2,
         Elemental = 3,
-        Mech = 4
+        Mech = 4,
     }
 
     public enum SideType : byte
@@ -34,7 +34,6 @@
         Expensive
     }
 
-
     public enum FieldType : byte
     {
         HandOne,
@@ -56,5 +55,14 @@
         FirstPlayerTurn,
         SecondPlayerTurn,
         Ending
+    }
+
+    public enum Mechanics : byte
+    {
+        None,
+        Charge,
+        BattleCry,
+        Taunt,
+        Buff
     }
 }

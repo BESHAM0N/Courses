@@ -1413,7 +1413,7 @@ MonoBehaviour:
   _localScaleCard: 1
   _defaultHealth: 1
   _defaultDamage: 0
-  _animationPositionCard: {x: 0, y: 2, z: 0}
+  _animationPositionCard: {x: 0, y: 2, z: -0.6}
   _cursor: {fileID: 2800000, guid: 183f7b7549219ab47becb461a16df882, type: 3}
 --- !u!114 &5062928751398036213
 MonoBehaviour:

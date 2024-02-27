@@ -7,13 +7,6 @@ using OneLine;
 namespace Cards
 {
 	[Serializable]
-	public struct DeckItem
-	{
-		public int CardId;
-		public bool IsUsed;
-	}
-	
-	[Serializable]
 	public struct CardPropertiesData
 	{
 		[Width(30)]
@@ -30,7 +23,12 @@ namespace Cards
 		[Width(65)]
 		public CardUnitType Type;
 
-		public CardParamsData GetParams()
+        [Width(65)]
+        public Mechanics Mechanics;
+
+		public int[] Instructions;
+
+        public CardParamsData GetParams()
 		{
 			return new CardParamsData(Cost, Attack, Health);
 		}
