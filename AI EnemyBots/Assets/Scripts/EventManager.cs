@@ -6,9 +6,8 @@ public class EventManager
 {
     public static readonly UnityEvent ActivePanel = new();
     public static readonly UnityEvent<Unit> GetUnit = new();
+    public static readonly UnityEvent<Unit> GetUnitForAttack = new();
     public static readonly UnityEvent<Transform> ChangeRotation = new();
-    public static readonly UnityEvent<BaseUnit> CheckTarget = new();
-    public static readonly UnityEvent<List<BaseUnit>> SpawnBoots = new();
     
     public static void CallActivePanel()
     {
@@ -22,22 +21,15 @@ public class EventManager
             GetUnit.Invoke(unit);
     }
     
+    public static void CallGetUnitForAttack(Unit unit)
+    {
+        if (GetUnitForAttack != null)
+            GetUnitForAttack.Invoke(unit);
+    }
+    
     public static void CallChangeRotation(Transform rotation)
     {
         if (ChangeRotation != null)
             ChangeRotation.Invoke(rotation);
     }
-    
-    public static void CallCheckTarget(BaseUnit unit)
-    {
-        if (CheckTarget != null)
-            CheckTarget.Invoke(unit);
-    }
-    
-    public static void CallSpawnBoots(List<BaseUnit> units)
-    {
-        if (SpawnBoots != null)
-            SpawnBoots.Invoke(units);
-    }
-    
 }

@@ -1,5 +1,8 @@
+using System.Collections.Generic;
+using DG.Tweening;
 using UnityEngine;
 using UnityEngine.UI;
+using TMPro;
 
 public class AnimationSettingsPanel : MonoBehaviour
 {
@@ -7,23 +10,20 @@ public class AnimationSettingsPanel : MonoBehaviour
 
     [SerializeField] private GameObject _panel;
     [SerializeField] private Button _exitButton;
+    [SerializeField] private List<TMP_Text> _fields = new();
+    [SerializeField] private CanvasGroup _canvasGroup;
     private float _sizeWindowX;
     private float _sizeWindowY;
-    private Vector2 _startPosition;
     private Vector2 _endPosition;
-    private float _time = 10;
-    private float _startTime;
 
     private void Start()
     {
         _sizeWindowX = Screen.width;
         _sizeWindowY = Screen.height;
         _exitButton.onClick.AddListener(DeactivationPanel);
-        var positionX = _sizeWindowX - (_sizeWindowX * 0.5f);
-        _startPosition = new Vector2(positionX, _sizeWindowY);
-        var positionY = _sizeWindowY - (_sizeWindowY * 0.5f);
+        var positionX = _sizeWindowX - _sizeWindowX * 0.5f;
+        var positionY = _sizeWindowY - _sizeWindowY * 0.5f;
         _endPosition = new Vector2(positionX, positionY);
-        _panel.transform.position = _startPosition;
     }
 
     private void Update()
@@ -36,21 +36,27 @@ public class AnimationSettingsPanel : MonoBehaviour
 
     private void GetActivePanel()
     {
-        while (_startTime < _time)
+        _panel.GetComponent<Image>().material.DOFade(0, 0f);
+        _panel.transform.position = _endPosition;
+        
+        _canvasGroup.blocksRaycasts = true;
+        _panel.GetComponent<Image>().material.DOFade(1, 1f);
+
+        foreach (var field in _fields)
         {
-            var t = _startTime / _time;
-            _panel.transform.position = Vector2.Lerp(_startPosition, _endPosition, t);
-            _startTime += Time.deltaTime;
+            field.DOFade(1, 0.5f);
         }
-        _startTime = 0;
         _isAnimation = false;
     }
 
     private void DeactivationPanel()
     {
-        _panel.SetActive(false);
-        _panel.transform.position = _startPosition;
+        _canvasGroup.blocksRaycasts = false;
+        foreach (var field in _fields)
+        {
+            field.DOFade(0, 0.5f);
+        }
+        _panel.GetComponent<Image>().material.DOFade(0, 1f);
         _isAnimation = false;
     }
 }
-

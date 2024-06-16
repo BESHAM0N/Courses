@@ -1,9 +1,6 @@
-using System.Collections;
-using System.Collections.Generic;
-using Unity.VisualScripting;
-using UnityEngine;
-
-public class Cactus : BaseUnit, IBaseBotsMarker
+using System.Linq;
+public class Cactus : Unit, IBaseBotsMarker
 {
-    public int UnitId { get; set; } = 300;
+    public int UnitId { get; set; } = 2;
+   
 }

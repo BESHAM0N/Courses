@@ -35,7 +35,7 @@ public class SelectObject : MonoBehaviour
 
                     if (hit.collider.gameObject.TryGetComponent(out IBaseZigguratMarker baseZigguratMarker))
                     {
-                        _unit = UnitsStorage.Units.First(x => x.Id == baseZigguratMarker.Id);
+                        _unit = UnitsStorage.Units.FirstOrDefault(x => x.Id == baseZigguratMarker.Id);
                         EventManager.CallGetUnit(_unit);
                     }
                 }

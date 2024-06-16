@@ -22,7 +22,6 @@ public class EnemySettingsManager : MonoBehaviour
         _applyButton.onClick.AddListener(OnApplyClick);
         EventManager.GetUnit.AddListener(SetSettings);
     }
-
     private void SetSettings(Unit unit)
     {
         _unit = unit;
@@ -33,38 +32,20 @@ public class EnemySettingsManager : MonoBehaviour
         _probabilityOfDoubleDamage.value = _unit.ProbabilityOfDoubleDamage;
         _weakAttack.text = _unit.WeakAttack.ToString();
         _strongAttack.text = _unit.StrongAttack.ToString();
-        
         //TODO
         _probabilityOfWeakAndStrongAttacks.value = _unit.ProbabilityOfWeakAttack;
     }
-    
-
     private void OnApplyClick()
     {
         _unit.Health = (int)_health.value;
         _unit.MoveSpeed = (int)_speed.value;
-        _unit.ProbabilityOfMiss = GetProbabilityOfMiss(_probabilityOfMiss.value);
+        _unit.ProbabilityOfMiss = _probabilityOfMiss.value;
         _unit.ProbabilityOfDoubleDamage = _probabilityOfDoubleDamage.value;
         _unit.ProbabilityOfWeakAttack = _probabilityOfWeakAndStrongAttacks.value;
         _unit.WeakAttack = Convert.ToInt32(_weakAttack.text);
         _unit.StrongAttack = Convert.ToInt32(_strongAttack.text);
-        
+        _unit.ProbabilityOfWeakAttack = _probabilityOfWeakAndStrongAttacks.value;
+        _unit.ProbabilityOfStrongAttack = 100 - _unit.ProbabilityOfWeakAttack;
         Debug.Log($"Характеристики успешно заменены для: {_unit.Name}");
     }
-
-    private float GetProbabilityOfMiss(float value)
-    {
-        var randomValue = Random.Range(0, 100);
-
-        if (randomValue <= value)
-        {
-            
-        }
-
-        return randomValue;
-    }
-    
-    
-    
-
 }
